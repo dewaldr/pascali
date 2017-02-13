@@ -5,19 +5,16 @@
 // Functionality
 // -------------
 // Read pressure sensor and:
-// - convert to MPa and display
-// - if pressure lower than floor value: start pump
-// - if pressure value lower than floor value and pump running
-//   for more than 60 seconds : error state
-// - if pressure higher that ceiling and pump running: stop pump
+// - if pressure < floor: pump-on
+// - if pressure < floor & pump-on time > 120s => error (oow)
+// - if pressure >= ceiling and pump-on => pump-off
 //
 // To Do
 // -----
-// - LED display
-// - Relay timers
+// - pump-on timer
+// - State LEDs (solid green = idle, pulsing green = pump on, red = error)
+// - Remove delays: event driven?
 // - Pump current sensor
-// - State LEDs (solid green = idle, pulsing green = pump running, red = error)
-// - remove delays
 
 // User adjustable parameters
 const float low  = 2.0; // MPa
