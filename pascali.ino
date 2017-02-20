@@ -17,31 +17,50 @@
 // - Pump current sensor
 
 // User adjustable parameters
-const float low  = 2.0; // MPa
-const float high = 3.5; // MPa
+const float lowMark  = 2.0; // MPa
+const float highMark = 3.5; // MPa
 const int pressurePin = A0;
+const int currentPin = A1;
 const int relayPin = 10;
 
-// Constants and code
-const int offset = 20;      // zero pressure adjust
+// Constants
+const int offset = 20;      // zero offset
 const int fullScale = 1023; // max pressure (span) adjust
 
-// TODO: pin as parameter
+// TODO: use running average
 float getPressure(const int pin) {
     float reading = analogRead(pin);
     float result = (reading - offset) * 1.2 / (fullScale - offset); // MPa conversion
     return result;
 }
 
-// true = on, false = off (default)
-// TODO: pin as parameter
-//       check logic
-bool getRelayState(const int pin) {
-    bool state = false; // off
+float getCurrent(const int pin) {
+    float reading = analogRead(pin);
+    float result = (reading - offset) * 1.2 / (fullScale - offset);
+    return result;
+}
+
+void setPumpOn(const int pin) {
+    digitalWrite(pin, HIGH);
+}
+
+void setPumpOff(const int pin) {
+    digitalWrite(pin, LOW);
+}
+
+// Global functions
+
+bool isPumpRunning(const int relay_pin, const int current_pin) {
+    bool state = false;
+    if (digitalRead(relay_pin) /* is HIGH */ && getCurrent(current_pin) > 0.1) {
+        state = true;
+    }
     return state;
 }
 
 void setup() {
+    pinMode(relayPin, INPUT);   // Work around bug
+    pinMode(relayPin, OUTPUT);  // relay control
     Serial.begin(115200);
 }
 
@@ -52,8 +71,17 @@ void loop() {
     Serial.print(pressure, 1);
     Serial.println(" MPa");
     Serial.print("pump state: ");
-    Serial.println(getRelayState(relayPin) == true ? "on" : "off");
+    Serial.println(isPumpRunning(relayPin, currentPin) == true ? "on" : "off");
 
-    delay(500);
+    if (pressure < lowMark) {
+        // check is pump already running -> error
+        setPumpOn(relayPin);
+    }
+    else if (pressure > highMark) {
+        setPumpOff(relayPin);
+    }
+    // check pump run time + compare with pressure differential
+
+    delay(250);
 }
 
