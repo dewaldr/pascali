@@ -1,15 +1,15 @@
-# Arduno-based intelligent pump controller
+# Arduino-based intelligent pump controller
 #
 # Arduino.mk variables
-ARDUINO_DIR         = /opt/arduino
+ARDUINO_DIR         = /usr/share/arduino
 AVR_TOOLS_DIR       = /usr
+AVRDUDE_CONF		= /etc/avrdude.conf
+BOARD_TAG           = pro5v328
+ARDUINO_PORT        = /dev/ttyUSB0
+MONITOR_PORT		= /dev/ttyUSB0
+MONITOR_BAUDRATE    = 9600
 
 TARGET              = pascali
-ARDUINO_LIBS        = 
-
-BOARD_TAG           = uno
-ARDUINO_PORT        = /dev/ttyACM0
-MONITOR_BAUDRATE    = 115200
 
 include /opt/arduino-mk/Arduino.mk
 
